@@ -56,6 +56,43 @@ Here is a detailed list of the bot's commands and their functionalities:
     bun run start:bun
     ```
 
+## Arona CLI
+
+Arona is a CLI tool to quickly generate files for your bot.
+
+### Usage
+
+```bash
+bun arona make:<type> <Name>
+```
+
+### Available Types
+
+| Type        | Output Directory   |
+|-------------|--------------------|
+| `command`   | `src/commands`     |
+| `config`    | `src/config`       |
+| `middleware`| `src/middlewares`  |
+| `helper`    | `src/helpers`      |
+| `utils`     | `src/utils`        |
+
+### Examples
+
+Create a new command:
+```bash
+bun arona make:command Ping
+```
+
+Create a new middleware:
+```bash
+bun arona make:middleware CheckOwner
+```
+
+Create a new config:
+```bash
+bun arona make:config ApiKey
+```
+
 ## Configuration
 
 This template uses two configuration sources:

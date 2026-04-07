@@ -7,68 +7,98 @@ const args = process.argv.slice(2);
 const [command, rawName] = args;
 
 if (!command || !rawName) {
-  console.error("Usage: bun arona make:<command|config> <Name>");
+  console.error("Usage: bun arona make:<type> <Name>");
+  console.log("Types: command, config, middleware, helper, utils");
   process.exit(1);
 }
 
 const [_, type] = command.split(":");
 const name = rawName.trim();
 const fileName = name.toLowerCase() + ".ts";
-const className = name; // untuk command
-const functionName = name.charAt(0).toLowerCase() + name.slice(1); // untuk config
+const className = name;
+const functionName = name.charAt((0)).toLowerCase() + name.slice(1);
 
-const templates = {
+const templates: Record<string, () => string> = {
   command: () =>
-    `
-import { type Command } from "../../types/Command";
+`import { type Command } from "../../types/Command";
 
 export const ${functionName}: Command = {
   name: "${name.toLowerCase()}",
   description: "Deskripsi ${name}",
-  async execute(sock, msg) {
+  usage: "",
+  cmd: ["${name.toLowerCase()}"],
+  category: "general",
+  isMedia: false,
+  isOnlyOwner: false,
+  isOnlyGroup: false,
+  isOnlyAdmin: false,
+  isPremium: false,
+  isAuth: false,
+  async execute(sock, msg, args) {
     await sock.sendMessage(msg.key.remoteJid!, { text: "${name} works!" });
   },
 };
-`.trim(),
-
+`,
   config: () =>
-    `
-export const ${functionName} = {
+`export const ${functionName} = {
   // Konfigurasi untuk ${name}
 };
-`.trim(),
+`,
+  middleware: () =>
+`import { type Middleware } from "../../types/Middleware";
+
+export const ${functionName}: Middleware = {
+  name: "${name.toLowerCase()}",
+  async execute(sock, msg) {
+    return true;
+  },
+  isAuth: false,
+  isGroupOnly: false,
+  isOnlyOwner: false,
+  isOnlyAdmin: false,
+};
+`,
+  helper: () =>
+`export const ${functionName} = {
+  
+};
+`,
+  utils: () =>
+`export const ${functionName} = () => {
+  
+};
+`,
 };
 
-const targetDir =
-  type === "command" ? "commands" : type === "config" ? "config" : null;
+const targetDir: Record<string, string> = {
+  command: "commands",
+  config: "config",
+  middleware: "middlewares",
+  helper: "helpers",
+  utils: "utils",
+};
 
-if (!targetDir || !(type in templates)) {
-  console.error("Tipe yang didukung: command, config");
+if (!type || !targetDir[type] || !(type in templates)) {
+  console.error("Tipe yang didukung: " + Object.keys(templates).join(", "));
   process.exit(1);
 }
 
-const fullPath = path.join("./src", targetDir, fileName);
+const fullPath = path.join("./src", targetDir[type], fileName);
 
 try {
-  const stat = fs.statSync(path.dirname(fullPath));
-  if (stat.isDirectory()) {
-    if (fs.existsSync(fullPath)) {
-      console.error("File sudah ada:", fullPath);
-      process.exit(1);
-    }
-  } else {
-    console.error(`Tidak dapat menemukan direktori: ${path.dirname(fullPath)}`);
+  const dir = path.dirname(fullPath);
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir, { recursive: true });
+  }
+  if (fs.existsSync(fullPath)) {
+    console.error("File sudah ada:", fullPath);
     process.exit(1);
   }
 } catch (error) {
-  if (error.code === "ENOENT") {
-    fs.mkdirSync(path.dirname(fullPath), { recursive: true });
-  } else {
-    console.error(error);
-    process.exit(1);
-  }
+  console.error(error);
+  process.exit(1);
 }
 
 fs.writeFileSync(fullPath, templates[type]());
-console.log(`✅ Berhasil membuat ${type}: ${targetDir}/${fileName}`);
+console.log(`✅ Berhasil membuat ${type}: ${targetDir[type]}/${fileName}`);
 process.exit(0);
