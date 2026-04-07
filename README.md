@@ -1,6 +1,14 @@
 # Baileys Starter
 
-Baileys Starter is a versatile WhatsApp bot built with TypeScript and powered by the Baileys library. It offers a wide range of features, from fun and games to powerful tools and utilities.
+A scalable, type-safe WhatsApp bot template built with TypeScript and Baileys. Designed for maintainability and developer experience—no stress, just clean code.
+
+## Why Baileys Starter?
+
+- **Strict TypeScript** - Full type safety with interfaces for commands, middlewares, and messages
+- **Modular Architecture** - Easy to scale from a handful of commands to hundreds
+- **Middleware Pipeline** - Reusable checks for auth, permissions, rate limiting
+- **Arona CLI** - Scaffold new commands in seconds
+- **Low Cortisol Development** - Clear patterns, predictable structure, no magic
 
 ## Features
 
@@ -93,6 +101,66 @@ Create a new config:
 bun arona make:config ApiKey
 ```
 
+## Architecture
+
+### Registry (`src/registry.ts`)
+
+All commands and middlewares must be registered in `src/registry.ts`:
+
+```typescript
+export const commands = [ping, sticker, menu, afk];
+export const middlewares = [checkAfk];
+```
+
+**Commands** are executed when a user sends a message matching the command name or aliases.
+
+**Middlewares** are executed before every command. They can validate requests, modify data, or block execution by returning false. Useful for: authentication, permission checks, rate limiting, etc.
+
+### Creating Commands
+
+Commands are defined using the `Command` interface:
+
+```typescript
+import { type Command } from "../../types/Command";
+
+export const myCommand: Command = {
+  name: "mycommand",
+  description: "Description here",
+  usage: "<args>",
+  cmd: ["mycommand", "alias"],
+  category: "general",
+  isMedia: false,
+  isOnlyOwner: false,
+  isOnlyGroup: false,
+  isOnlyAdmin: false,
+  isPremium: false,
+  isAuth: false,
+  async execute(sock, msg, args) {
+    // Your logic here
+  },
+};
+```
+
+### Creating Middlewares
+
+Middlewares are defined using the `Middleware` interface:
+
+```typescript
+import { type Middleware } from "../../types/Middleware";
+
+export const myMiddleware: Middleware = {
+  name: "mymiddleware",
+  async execute(sock, msg) {
+    // Return true to continue, false to block
+    return true;
+  },
+  isAuth: false,
+  isGroupOnly: false,
+  isOnlyOwner: false,
+  isOnlyAdmin: false,
+};
+```
+
 ## Configuration
 
 This template uses two configuration sources:
@@ -129,20 +197,24 @@ export const bot = {
 ```
 .
 ├── src
-│   ├── commands
-│   ├── config
-│   ├── exceptions
-│   ├── helpers
-│   ├── includes
-│   ├── lib
-│   ├── middlewares
-│   ├── types
-│   └── utils
-├── types
-├── index.ts
+│   ├── commands       # Command handlers
+│   ├── config         # Static configurations
+│   ├── exceptions     # Custom exceptions
+│   ├── helpers        # Helper functions
+│   ├── includes       # Included modules
+│   ├── lib            # Libraries
+│   ├── middlewares    # Middleware handlers
+│   ├── types          # TypeScript types
+│   └── utils          # Utility functions
+├── types              # Global type definitions
+├── index.ts           # Entry point
 └── ...
 ```
 
 ## Contributing
 
 Contributions are welcome! Please feel free to open an issue or submit a pull request.
+
+## License
+
+MIT License - see [LICENSE](LICENSE) file.
