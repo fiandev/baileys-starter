@@ -1,7 +1,6 @@
 import type { Command } from "../../types/Command";
 import { commands } from "../registry";
 import { t } from "../utils/translate";
-import { bot } from "../config/bot";
 import { reportError } from "../utils/reporting";
 import { prisma } from "../lib/prisma";
 

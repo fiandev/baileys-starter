@@ -34,7 +34,11 @@ Here is a detailed list of the bot's commands and their functionalities:
     ```bash
     git clone https://github.com/fiandev/baileys-starter.git
     ```
-2.  Install dependencies using your favorite package manager:
+2.  Install **FFmpeg** (required for media processing):
+    - Ubuntu/Debian: `sudo apt install ffmpeg`
+    - macOS: `brew install ffmpeg`
+    - Windows: Download from [ffmpeg.org](https://ffmpeg.org/download.html)
+3.  Install dependencies using your favorite package manager:
     ```bash
     npm install
     # or
