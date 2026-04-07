@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "yui-ai": {
+      "command": "bun",
+      "args": ["run", "src/mcp/server.ts"],
+      "env": {
+        "LLM_APIKEY": "${LLM_APIKEY}"
+      }
+    }
+  }
+}

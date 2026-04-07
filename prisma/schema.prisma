@@ -1,0 +1,95 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+enum MoneyManagerTransactionType {
+  INCOME
+  EXPENSE
+}
+
+enum MoneyManagerWalletType {
+  BANK
+  EWALLET
+  EXCHANGE
+  ASSET
+  OTHER
+}
+
+model User {
+  id                String            @id @default(cuid())
+  phone             String            @unique
+  name              String
+  age               Int
+  isPremium         Boolean           @default(false)
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+  limit             Int               @default(10)
+  exp               BigInt            @default(0)
+  moneyManagerTrxes MoneyManagerTrx[]
+  afkHistories      AfkHistory[]
+}
+
+model MoneyManagerTrx {
+  id                   String                      @id @default(cuid())
+  userId               String
+  amount               BigInt
+  type                 MoneyManagerTransactionType
+  note                 String?
+  user                 User                        @relation(fields: [userId], references: [id])
+  moneyManagerWallet   MoneyManagerWallet?         @relation(fields: [moneyManagerWalletId], references: [id])
+  moneyManagerWalletId String?
+  createdAt            DateTime                    @default(now())
+  updatedAt            DateTime                    @updatedAt
+}
+
+model MoneyManagerWallet {
+  id          String                 @id @default(cuid())
+  name        String
+  type        MoneyManagerWalletType
+  transaction MoneyManagerTrx[]
+  createdAt   DateTime               @default(now())
+  updatedAt   DateTime               @updatedAt
+}
+
+model BotConfig {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model AutoReplyChat {
+  id        String   @id @default(cuid())
+  jid       String   @unique
+  createdAt DateTime @default(now())
+}
+
+model AfkHistory {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  reason    String
+  startTime DateTime @default(now())
+  endTime   DateTime @default(now())
+}
+
+model JsonStorage {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     Json
+  createdAt DateTime @default(now())
+}
+
+model Storage {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     String
+  ref       String?
+  createdAt DateTime @default(now())
+}
