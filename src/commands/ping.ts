@@ -3,7 +3,6 @@ import { type Command } from "../../types/Command";
 import UnexpectedError from "../exceptions/UnexpectedError";
 import { prisma } from "../lib/prisma";
 import { os } from "../utils/os";
-import { time } from "../utils/time";
 
 export const ping: Command = {
   name: "ping",
