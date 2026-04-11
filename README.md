@@ -49,6 +49,22 @@ Here is a detailed list of the bot's commands and their functionalities:
     bun install
     ```
 
+## Docker
+
+1.  Create a `.env` file from `.env.example`:
+    ```bash
+    cp .env.example .env
+    ```
+2.  Build and run the container:
+    ```bash
+    docker-compose up --build
+    ```
+
+To stop the container:
+```bash
+docker-compose down
+```
+
 ## Usage
 
 1.  Build the project:
